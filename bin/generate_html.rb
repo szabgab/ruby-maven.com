@@ -26,7 +26,7 @@ html = <<HTML
 <h1>#{params['title']}</h1>
 <table>
 <tr>
-  <th>name</th>
+  <th>Name</th><th>Travis-CI</th><th>Error</th>
 </tr>
 HTML
 
@@ -42,6 +42,8 @@ data.each do |e|
     else
         html += "<td>na</td>"
     end
+
+	html += "<td>#{e['error'] ? e['error'] : '&nbsp;'}</td>";
 
     html += "</tr>\n"
 end
@@ -65,6 +67,10 @@ html += <<HTML
 </html>
 HTML
 
+d = 'html'
+if (not Dir.exists? d)
+	Dir.mkdir d
+end
 fh = File.new('html/index.html', 'w')
 fh.write(html)
 fh.close

@@ -68,10 +68,19 @@ gems.each do |g|
     end
     if (not travis_yml)
         item['error'] = 'no travis.yml found in git repository'
+		recent.push(item)
+		next
     end
 
     travis_url = 'https://api.travis-ci.org/repos/' + m[1] + '/builds';
-    res = get( travis_url, {'Accept' => 'application/vnd.travis-ci.2+json'})
+	# remove / from m[1]
+	begin
+    	res = get( travis_url, {'Accept' => 'application/vnd.travis-ci.2+json'})
+	rescue
+		item['error'] = "Failed to fetch data from travis API: '#{travis_url}'"
+		recent.push(item)
+		next
+	end
     #puts res
     #puts '-----'
     data = JSON.parse(res)
@@ -92,7 +101,7 @@ gems.each do |g|
         exit
     end
     recent.push(item)
-    break if recent.length > 5
+    #break if recent.length > 5
 end
 
 #pp recent
