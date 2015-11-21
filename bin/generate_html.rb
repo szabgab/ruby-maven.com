@@ -65,5 +65,7 @@ html += <<HTML
 </html>
 HTML
 
-puts html
+fh = File.new('html/index.html', 'w')
+fh.write(html)
+fh.close
 
