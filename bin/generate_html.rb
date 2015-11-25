@@ -60,7 +60,8 @@ html = <<HTML
 </tr>
 HTML
 
-data.each do |e|
+count = 0
+data.reverse.each do |e|
     html += "<tr>"
 
     html += "<td><a href=\"https://rubygems.org/gems/#{e['name']}\">#{e['name']}</a></td>"
@@ -83,6 +84,8 @@ data.each do |e|
     end
 
     html += "</tr>\n"
+	count += 1
+	break if count >= 50 
 end
 
 html += <<HTML
