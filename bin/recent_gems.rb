@@ -17,15 +17,16 @@ def main()
         item = {
            'name' => g['name'],
         }
-        if (not g['homepage_uri'])
-            item['error'] = 'homepage_url missing'
+		repository_url = g['source_code_uri'] || g['homepage_uri']
+		if (not repository_url) 
+			#pp g
             recent.push(item)
             next
         end
-        item['homepage_uri'] = g['homepage_uri']
-        m = %r{^https?://github.com/(.*)}.match(item['homepage_uri'])
+        item['repository_url'] = repository_url
+        m = %r{^https?://github.com/(.*)}.match(repository_url)
         if (not m)
-            item['error'] = 'homepage_uri is not to github'
+			#pp g
             recent.push(item)
             next
         end
@@ -42,42 +43,14 @@ def main()
         rescue
            #puts 'No travis.yml fund'
         end
-        if (not travis_yml)
-            item['error'] = 'no travis.yml found in git repository'
-    		recent.push(item)
-    		next
+        if (travis_yml)
+			item['travis_yml'] = true
+		else
+			item['travis_yml'] = false
         end
     
-        #travis_url = 'https://api.travis-ci.org/repos/' + m[1] + '/builds';
-    	## remove / from m[1]
-    	#begin
-        #	res = get( travis_url, {'Accept' => 'application/vnd.travis-ci.2+json'})
-    	#rescue
-    	#	item['error'] = "Failed to fetch data from travis API: '#{travis_url}'"
-    	#	recent.push(item)
-    	#	next
-    	#end
-        ##puts res
-        ##puts '-----'
-        #data = JSON.parse(res)
-        ##pp data
-        #if (not data or not data['builds'] or data['builds'].length == 0)
-        #    # was this a JSON parse error or was this the exception that still set travis_yml to some value?
-        #    item['error'] = 'Could not find builds in data received from travis-ci.org'
-        #    recent.push(item)
-        #    next
-        #end
-    
-        #begin
-        #    item['travis_status'] = get_travis_status( data['builds'] )
-        #rescue
-        #    puts travis_yml
-        #    puts '---'
-        #    pp data
-        #    exit
-        #end
         recent.push(item)
-        break if recent.length > 5
+        #break if recent.length > 5
     end
     
     #pp recent
@@ -97,21 +70,6 @@ def get(url, params = {})
     #pp params
     fh = open(url, params)
     return fh.read
-end
-
-def get_travis_status(builds)
-    #puts 'get_travis_status'
-    #puts builds
-
-    return 'unknown' unless builds
-    state = builds[0]['state']
-    #puts 'state: ' + state
-
-    return state     if /cancel|pend/ =~ state
-    return 'error'   if /error/ =~ state
-    return 'failing' if /fail/  =~ state
-    return 'passing' if /pass/  =~ state
-    return 'unknown'
 end
 
 main()
