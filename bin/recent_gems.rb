@@ -7,7 +7,7 @@ url = 'https://rubygems.org/api/v1/activity/just_updated.json'
 def get(url, params = {})
     #params ||= {}
     params["User-Agent"] ||= "Code-Maven (see: http://code-maven.com/ )"
-    puts "-> Fetching #{url}"
+    #puts "-> Fetching #{url}"
     #pp params
     fh = open(url, params)
     return fh.read
