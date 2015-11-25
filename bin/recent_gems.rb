@@ -8,25 +8,50 @@ def main()
     response = get(url)
     gems = JSON.parse(response)
     #pp gems
-    
-    recent = []
+
+	recent = []
+	begin
+    	f = File.new('recent.json', 'r')
+    	recent = JSON.parse(f.read)
+    	f.close
+	rescue
+	end	
+
+	# TODO report if the number of entries added was close to the total number downloaded in the 'recent' request
+	# then we need to increase the frequencey of our polling
+	
+	#pp recent
     
     gems.each do |g|
-        #puts g['name']
-        #puts g['homepage_uri']
+        #pp g
+        #exit
+
+		is_new = true
+		recent.each do |r|
+			if (r['name'] == g['name'] and Gem::Version.new(g['version']) <= Gem::Version.new(r['version']))
+				is_new = false
+				break
+    		end
+		end
+		if (not is_new)
+			break
+		end
+		puts "Adding #{g['name']}  #{g['version']}"
+
         item = {
-           'name' => g['name'],
+            'name' => g['name'],
+            'version' => g['version']
         }
-		repository_url = g['source_code_uri'] || g['homepage_uri']
-		if (not repository_url) 
-			#pp g
+        repository_url = g['source_code_uri'] || g['homepage_uri']
+        if (not repository_url) 
+            #pp g
             recent.push(item)
             next
         end
         item['repository_url'] = repository_url
         m = %r{^https?://github.com/(.*)}.match(repository_url)
         if (not m)
-			#pp g
+            #pp g
             recent.push(item)
             next
         end
@@ -44,9 +69,9 @@ def main()
            #puts 'No travis.yml fund'
         end
         if (travis_yml)
-			item['travis_yml'] = true
-		else
-			item['travis_yml'] = false
+            item['travis_yml'] = true
+        else
+            item['travis_yml'] = false
         end
     
         recent.push(item)

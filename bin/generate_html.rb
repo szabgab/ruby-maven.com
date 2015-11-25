@@ -24,26 +24,63 @@ html = <<HTML
 </head>
 <body>
 <h1>#{params['title']}</h1>
+
+<style>
+.ok {
+  background-color: #5CB85C;
+  color: #FFF;
+}
+
+.nok {
+  background-color: #D9534F;
+  color: #FFF;
+}
+
+.na {
+  background-color: #777;
+  color: #FFF;
+}
+
+.ok a {
+  color: #FFF;
+}
+.nok a {
+  color: #FFF;
+}
+.na a {
+  color: #FFF;
+}
+
+
+</style>
+
 <table>
 <tr>
-  <th>Name</th><th>Travis-CI</th><th>Error</th>
+  <th>Name</th><th>Repository</th><th>Travis-CI</th>
 </tr>
 HTML
 
 data.each do |e|
     html += "<tr>"
-    if ( e['homepage_uri'])
-        html += "<td><a href=\"#{e['homepage_uri']}\">#{e['name']}</a></td>"
+
+    html += "<td><a href=\"https://rubygems.org/gems/#{e['name']}\">#{e['name']}</a></td>"
+
+    if ( e['repository_url'] )
+        html += "<td class=\"ok\"><a href=\"#{e['repository_url']}\">VCS</a></td>"
     else
-        html += "<td>#{e['name']}</td>"
-    end
-    if ( e['travis_status'])
-        html += "<td><img src=\"/img/build-#{e['travis_status']}.png\"></td>"
-    else
-        html += "<td>na</td>"
+        html += "<td class=\"nok\">Add!</td>"
     end
 
-	html += "<td>#{e['error'] ? e['error'] : '&nbsp;'}</td>";
+    m = %r{^https?://github.com/(.*)}.match(e['repository_url'])
+    if ( e['travis_yml'])
+        html += "<td class=\"ok\"><a href=\"https://travis-ci.org/#{m[1]}/\">Travis</a></td>"
+    else
+        if (e['repository_url'] and m)
+            html += "<td class=\"nok\"><a href=\"https://travis-ci.org/#{m[1]}/\">Enable!</a></td>"
+        else
+            html += "<td class=\"na\">Irrelevant</td>"
+        end
+    end
 
     html += "</tr>\n"
 end
