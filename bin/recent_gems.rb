@@ -20,6 +20,10 @@ def main()
 	# TODO report if the number of entries added was close to the total number downloaded in the 'recent' request
 	# then we need to increase the frequencey of our polling
 	
+	# TODO maybe change the processing to
+	#   step one save all the recent in the "database"
+	#   go over all the N recent and where there is no travis.yml check it,  this way if someone adds .travis.yml we'll update our data even without a new release to RubyGems.
+
 	#pp recent
     
     gems.each do |g|
@@ -42,7 +46,7 @@ def main()
             'name' => g['name'],
             'version' => g['version']
         }
-        repository_url = g['source_code_uri'] || g['homepage_uri']
+        repository_url = g['source_code_uri']# || g['homepage_uri']
         if (not repository_url) 
             #pp g
             recent.push(item)
