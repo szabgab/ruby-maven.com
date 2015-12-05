@@ -7,7 +7,7 @@ def main()
     url = 'https://rubygems.org/api/v1/activity/just_updated.json'
     response = get(url)
     gems = JSON.parse(response)
-    #pp gems
+    pp gems
 
 	recent = []
 	begin
@@ -23,6 +23,14 @@ def main()
 	# TODO maybe change the processing to
 	#   step one save all the recent in the "database"
 	#   go over all the N recent and where there is no travis.yml check it,  this way if someone adds .travis.yml we'll update our data even without a new release to RubyGems.
+
+	# Apparenty the source_code_uri field cannot be added via the gemspec file yet and one need to add it via a GUI at https://rubygems.org/gems/<gem_name>/edit
+	# For historical reason many people put the URL of their GitHub repository in the homepage_uri field.
+	# http://guides.rubygems.org/specification-reference/
+
+	# Create your first gem: http://guides.rubygems.org/publishing/
+	# Maybe new gems are not in that feed, only in the other feed?
+
 
 	#pp recent
     
@@ -47,7 +55,7 @@ def main()
             'version' => g['version']
         }
         repository_url = g['source_code_uri']# || g['homepage_uri']
-        if (not repository_url) 
+        if (repository_url == nil or repository_url == '') 
             #pp g
             recent.push(item)
             next
