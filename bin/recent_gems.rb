@@ -7,7 +7,7 @@ def main()
     url = 'https://rubygems.org/api/v1/activity/just_updated.json'
     response = get(url)
     gems = JSON.parse(response)
-    pp gems
+    #pp gems
 
 	recent = []
 	begin
@@ -54,7 +54,7 @@ def main()
             'name' => g['name'],
             'version' => g['version']
         }
-        repository_url = g['source_code_uri']# || g['homepage_uri']
+        repository_url = g['metadata']['source_code_uri'] || g['homepage_uri']
         if (repository_url == nil or repository_url == '') 
             #pp g
             recent.push(item)
