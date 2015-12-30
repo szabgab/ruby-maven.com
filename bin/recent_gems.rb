@@ -48,7 +48,7 @@ def main()
 		if (not is_new)
 			break
 		end
-		puts "Adding #{g['name']}  #{g['version']}"
+		#puts "Adding #{g['name']}  #{g['version']}"
 
         item = {
             'name' => g['name'],
